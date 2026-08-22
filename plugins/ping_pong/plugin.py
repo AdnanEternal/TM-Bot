@@ -22,5 +22,5 @@ class Pong(BasePlugin):
     
         if not self.enabled:
             return
-        print(5)
+        await message.reply(str(message.text))
     

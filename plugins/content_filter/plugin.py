@@ -3,7 +3,7 @@ from aiogram import Bot
 from core.plugin import BasePlugin
 
 from .handlers import filter_message
-
+from aiogram.dispatcher.event.bases import SkipHandler
 
 class ContentFilterPlugin(BasePlugin):
 
@@ -30,9 +30,12 @@ class ContentFilterPlugin(BasePlugin):
     ) -> None:
 
         if not self.enabled:
-            return
+            raise SkipHandler
 
-        await filter_message(
+        handled = await filter_message(
             self,
             message,
         )
+
+        if not handled:
+            raise SkipHandler

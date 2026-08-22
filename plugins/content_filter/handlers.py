@@ -4,10 +4,10 @@ from aiogram.types import Message
 async def filter_message(
     plugin,
     message: Message,
-) -> None:
+) -> bool:
 
     if not message.text:
-        return
+        return False
 
     text = message.text.lower()
 
@@ -17,12 +17,13 @@ async def filter_message(
 
             try:
                 await message.delete()
-
+                return True
+            
             except Exception as exc:
 
                 print(
                     f"[content_filter] "
                     f"Failed to delete message: {exc}"
                 )
-
-            return
+                return False
+    return False
