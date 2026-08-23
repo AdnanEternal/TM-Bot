@@ -6,12 +6,12 @@ from . import repository
 def register(command_manager, plugin) -> None:
 
     command_manager.register(
-        name="mioo",
+        name="llm_list",
         handler=_bind(_cmd_list_models, plugin),
     )
 
     command_manager.register(
-        name="addmodel",
+        name="add_model",
         handler=_bind(_cmd_add_model, plugin),
     )
 
