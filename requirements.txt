@@ -1,0 +1,2 @@
+litellm==1.94.0
+aiogram==3.30.0
