@@ -1,5 +1,6 @@
-from aiogram import Router
+from aiogram import Bot, Router
 from aiogram.filters import Command
+from aiogram.types import BotCommand
 
 
 class CommandManager:
@@ -38,6 +39,17 @@ class CommandManager:
             )
 
             self._commands[command_name] = handler
+
+
+    async def sync_commands(self, bot: Bot) ->None:
+        commands = [
+            BotCommand(
+                command=name,
+                description=name,
+            )
+            for name in self._commands
+        ]
+        await bot.set_my_commands(commands)
 
     def has(self, name: str) -> bool:
         return name in self._commands

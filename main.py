@@ -6,8 +6,8 @@ from core.bot import create_bot
 from core.plugin_manager import PluginManager
 from core.event_manager import EventManager
 from core.database_manager import DatabaseManager
-from config import config
 
+from config import config
 
 async def main() -> None:
 
@@ -18,7 +18,6 @@ async def main() -> None:
         token=token,
         proxy_url=proxy_url,
     )
-
     db = DatabaseManager()
     await db.connect()
 
@@ -30,7 +29,7 @@ async def main() -> None:
 
     plugin_manager.discover()
     await plugin_manager.enable_all()
-
+    await plugin_manager.command_manager.sync_commands(bot)
     # کامندها باید زودتر از هندلر عمومی include بشن، وگرنه
     # event_manager.handle_message (که فیلتر نداره) همه چیز رو می‌بلعه
     plugin_manager.include_command_router()
@@ -44,9 +43,11 @@ async def main() -> None:
     dispatcher.include_router(fallback_router)
 
     print("Bot is running...")
+    
 
     try:
         await dispatcher.start_polling(bot)
+
 
     finally:
         await plugin_manager.disable_all()

@@ -5,7 +5,6 @@ from core.plugin import BasePlugin
 from . import repository
 from .triggers import process_message
 
-
 class AIGateway(BasePlugin):
 
     name = "ai_gateway"
