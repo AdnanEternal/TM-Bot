@@ -8,7 +8,7 @@ async def filter_message(
 
     if not message.text:
         return False
-
+    
     text = message.text.lower()
 
     for word in plugin.filtered_words:
