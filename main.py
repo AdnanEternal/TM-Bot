@@ -1,10 +1,11 @@
 import asyncio
 
-from aiogram import F
+from aiogram import Router
 
 from core.bot import create_bot
 from core.plugin_manager import PluginManager
 from core.event_manager import EventManager
+from core.database_manager import DatabaseManager
 from config import config
 
 
@@ -15,25 +16,32 @@ async def main() -> None:
 
     bot, dispatcher = create_bot(
         token=token,
-        proxy_url=proxy_url
+        proxy_url=proxy_url,
     )
+
+    db = DatabaseManager()
+    await db.connect()
 
     plugin_manager = PluginManager(
         bot=bot,
         dispatcher=dispatcher,
+        db=db,
     )
 
     plugin_manager.discover()
-
     await plugin_manager.enable_all()
+
+    # کامندها باید زودتر از هندلر عمومی include بشن، وگرنه
+    # event_manager.handle_message (که فیلتر نداره) همه چیز رو می‌بلعه
+    plugin_manager.include_command_router()
 
     event_manager = EventManager(
         plugin_manager.plugins.values()
     )
 
-    dispatcher.message.register(
-        event_manager.handle_message
-    )
+    fallback_router = Router(name="fallback")
+    fallback_router.message.register(event_manager.handle_message)
+    dispatcher.include_router(fallback_router)
 
     print("Bot is running...")
 
@@ -42,6 +50,7 @@ async def main() -> None:
 
     finally:
         await plugin_manager.disable_all()
+        await db.close()
         await bot.session.close()
 
 
