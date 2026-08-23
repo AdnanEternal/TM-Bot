@@ -12,7 +12,7 @@ from config import config
 async def main() -> None:
 
     token = config.get_required("BOT_TOKEN")
-    proxy_url = config.get("PROXY_URL")
+    proxy_url = config.get("PROXY_URL",default=None)
 
     bot, dispatcher = create_bot(
         token=token,
