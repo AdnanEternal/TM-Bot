@@ -9,7 +9,7 @@ from .triggers import process_message
 class AIGateway(BasePlugin):
 
     name = "ai_gateway"
-    version = "2.0.0"
+    version = "2.1.0"
 
     def setup(self) -> None:
         pass

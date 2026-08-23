@@ -15,6 +15,12 @@ def register(command_manager, plugin) -> None:
         handler=_bind(_cmd_add_model, plugin),
     )
 
+    command_manager.register(
+        name="set_active_model",
+        handler=_bind(_cmd_set_active_model, plugin),
+)
+
+
 
 def _bind(func, plugin):
     async def handler(message: Message) -> None:
@@ -68,10 +74,44 @@ async def _cmd_add_model(message: Message, plugin) -> None:
         await message.reply(f"اضافه کردن مدل شکست خورد: {exc}")
         return
 
-    await message.reply(f"مدل «{label}» اضافه و فعال شد.")
-
+    await message.reply(
+    f"مدل «{label}» اضافه شد.\n"
+    "برای فعال کردن آن از /set_active_model استفاده کنید."
+)
     # پیام حاوی api_key رو پاک می‌کنیم که توی تاریخچه‌ی چت نمونه
     try:
         await message.delete()
     except Exception:
         pass
+
+async def _cmd_set_active_model(message: Message, plugin) -> None:
+
+    if not message.text:
+        return
+
+    parts = message.text.split(maxsplit=1)
+
+    if len(parts) < 2:
+        await message.reply(
+            "فرمت درست:\n"
+            "/set_active_model <label>"
+        )
+        return
+
+    _, label = parts
+    label = label.strip()
+
+    success = await repository.set_active_model(
+        plugin.db,
+        label,
+    )
+
+    if not success:
+        await message.reply(
+            f"مدلی با label «{label}» پیدا نشد."
+        )
+        return
+
+    await message.reply(
+        f"مدل فعال به «{label}» تغییر کرد."
+    )

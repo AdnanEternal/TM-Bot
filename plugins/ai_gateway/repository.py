@@ -37,11 +37,39 @@ async def add_model(
         (label, model_id, base_url, api_key),
     )
 
-    # آخرین مدلی که اضافه می‌شه، خودکار فعال می‌شه
-    await db.execute(
-        f"UPDATE {TABLE_NAME} SET is_active = (label = ?)",
+async def set_active_model(
+    db: DatabaseManager,
+    label: str,
+) -> bool:
+    model = await db.fetchone(
+        f"""
+        SELECT id
+        FROM {TABLE_NAME}
+        WHERE label = ?
+        """,
         (label,),
     )
+
+    if not model:
+        return False
+
+    await db.execute(
+        f"""
+        UPDATE {TABLE_NAME}
+        SET is_active = 0
+        """
+    )
+
+    await db.execute(
+        f"""
+        UPDATE {TABLE_NAME}
+        SET is_active = 1
+        WHERE label = ?
+        """,
+        (label,),
+    )
+
+    return True
 
 
 async def list_models(db: DatabaseManager):
