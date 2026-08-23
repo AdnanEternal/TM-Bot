@@ -1,18 +1,10 @@
 from aiogram.types import Message
+from .ai_service import AIService
 
-# from .triggers import is_ai_trigger
-
-def is_ai_trigger(text: str) -> bool:
-    return "بوبی" in text
-
-async def on_message(message: Message) -> None:
-
-    if not message.text:
-        return
-
-    if not is_ai_trigger(message.text):
-        return
-
+async def ai_replying(message: Message) -> None:
+    ai_service= AIService()
+    ai_response=await ai_service.ask(message.text)
     await message.reply(
-        "کسی منو صدا زد؟"
+        ai_response
     )
+

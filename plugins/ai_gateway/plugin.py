@@ -1,22 +1,17 @@
+from aiogram.types import Message
+
 from core.plugin import BasePlugin
+
+from .triggers import process_message
 
 
 class AIGateway(BasePlugin):
 
     name = "ai_gateway"
-    version = "0.1"
+    version = "10.0"
 
     def setup(self) -> None:
         pass
 
-    async def on_message(self, message) -> None:
-
-        if not message.text:
-            return
-
-        if "بوبی" not in message.text:
-            return
-
-        await message.reply(
-            "کسی منو صدا زد؟"
-        )
+    async def on_message(self, message: Message) -> None:
+        await process_message(message,self.bot)

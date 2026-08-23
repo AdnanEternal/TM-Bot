@@ -7,6 +7,8 @@ class BasePlugin(ABC):
 
     name: str = "unknown"
     version: str = "1.0.0"
+    description: str = "بدون شرح"
+    
 
     def __init__(self, bot: Bot):
         self.bot = bot
