@@ -8,34 +8,15 @@ from aiogram.dispatcher.event.bases import SkipHandler
 class ContentFilterPlugin(BasePlugin):
 
     name = "content_filter"
-    version = "1.0.0"
-
-    def __init__(self, bot: Bot):
-        super().__init__(bot)
-
-        self.filtered_words: set[str] = {
-            "فاک",
-            "fuck",
-        }
+    version = "0.1"
 
     def setup(self) -> None:
+        pass
 
-        self.router.message.register(
-            self.on_message
-        )
+    async def on_message(self, message) -> None:
 
-    async def on_message(
-        self,
-        message,
-    ) -> None:
+        if not message.text:
+            return
 
-        if not self.enabled:
-            raise SkipHandler
-
-        handled = await filter_message(
-            self,
-            message,
-        )
-
-        if not handled:
-            raise SkipHandler
+        if "فاک" in message.text:
+            await message.delete()

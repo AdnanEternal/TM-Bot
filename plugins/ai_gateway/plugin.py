@@ -1,20 +1,22 @@
-from aiogram import Bot
-
 from core.plugin import BasePlugin
-
-from .handlers import on_message
-
 
 
 class AIGateway(BasePlugin):
+
     name = "ai_gateway"
     version = "0.1"
 
-    def __init__(self, bot: Bot):
-        super().__init__(bot)
-
     def setup(self) -> None:
+        pass
 
-        self.router.message.register(
-            on_message
+    async def on_message(self, message) -> None:
+
+        if not message.text:
+            return
+
+        if "بوبی" not in message.text:
+            return
+
+        await message.reply(
+            "کسی منو صدا زد؟"
         )

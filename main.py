@@ -1,7 +1,10 @@
 import asyncio
 
+from aiogram import F
+
 from core.bot import create_bot
 from core.plugin_manager import PluginManager
+from core.event_manager import EventManager
 from config import config
 
 
@@ -21,17 +24,23 @@ async def main() -> None:
     )
 
     plugin_manager.discover()
-    plugin_manager.include_routers()
+
     await plugin_manager.enable_all()
+
+    event_manager = EventManager(
+        plugin_manager.plugins.values()
+    )
+
+    dispatcher.message.register(
+        event_manager.handle_message
+    )
 
     print("Bot is running...")
 
     try:
-
         await dispatcher.start_polling(bot)
 
     finally:
-
         await plugin_manager.disable_all()
         await bot.session.close()
 

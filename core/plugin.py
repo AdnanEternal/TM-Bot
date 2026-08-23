@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from aiogram import Bot, Router
+from aiogram import Bot
 
 
 class BasePlugin(ABC):
@@ -10,15 +10,10 @@ class BasePlugin(ABC):
 
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.router = Router(name=self.name)
-
         self.enabled = False
 
     @abstractmethod
     def setup(self) -> None:
-        """
-        ثبت handlerها، commandها و تنظیمات پلاگین.
-        """
         raise NotImplementedError
 
     async def enable(self) -> None:
