@@ -10,4 +10,5 @@ async def process_message(message: Message, bot: Bot, db) -> None:
         return
 
     if "بوبی" in message.text:
+        print(message.text)
         await handlers.ai_replying(message, db)

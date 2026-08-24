@@ -64,7 +64,8 @@ async def _cmd_add_model(message: Message, plugin) -> None:
 
     try:
         await repository.add_model(
-            plugin.db,
+            db=plugin.db,
+            plugin_id=plugin.plugin_id,
             label=label,
             base_url=base_url,
             api_key=api_key,

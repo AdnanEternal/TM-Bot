@@ -51,7 +51,7 @@ async def add_model(
             base_url, 
             api_key
         )
-        VALUES (?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?)
         """,
         (
             plugin_id,
