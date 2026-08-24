@@ -27,11 +27,11 @@ async def main() -> None:
         db=db,
     )
 
+    await plugin_manager.initialize()
     plugin_manager.discover()
+
     await plugin_manager.enable_all()
     await plugin_manager.command_manager.sync_commands(bot)
-    # کامندها باید زودتر از هندلر عمومی include بشن، وگرنه
-    # event_manager.handle_message (که فیلتر نداره) همه چیز رو می‌بلعه
     plugin_manager.include_command_router()
 
     event_manager = EventManager(

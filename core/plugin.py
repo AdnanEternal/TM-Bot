@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from aiogram import Bot
 
@@ -11,9 +12,15 @@ class BasePlugin(ABC):
     version: str = "1.0.0"
     description: str = "بدون شرح"
 
-    def __init__(self, bot: Bot, db: DatabaseManager):
+    def __init__(
+            self, 
+            bot: Bot, 
+            db: DatabaseManager
+    ):
+        
         self.bot = bot
         self.db = db
+        self.plugin_id: Optional[int] = None
         self.enabled = False
 
     @abstractmethod

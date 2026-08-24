@@ -25,7 +25,21 @@ class PluginManager:
 
         self.plugins: dict[str, BasePlugin] = {}
 
-    def discover(
+    async def initialize(self) -> None:
+
+        await self.db.execute(
+            """
+            CREATE TABLE IF NOT EXISTS plugins (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                version TEXT NOT NULL,
+                description TEXT NOT NULL DEFAULT '',
+                enabled INTEGER NOT NULL DEFAULT 1
+            )
+            """
+        )
+
+    async def discover(
         self,
         plugins_directory: str = "plugins",
     ) -> None:
@@ -45,9 +59,9 @@ class PluginManager:
             if not plugin_module.exists():
                 continue
 
-            self._load_plugin(plugin_dir.name)
+            await self._load_plugin(plugin_dir.name)
 
-    def _load_plugin(self, plugin_name: str) -> None:
+    async def _load_plugin(self, plugin_name: str) -> None:
 
         module_path = f"plugins.{plugin_name}.plugin"
         module = importlib.import_module(module_path)
@@ -66,19 +80,78 @@ class PluginManager:
         if plugin_class is None:
             raise RuntimeError(f"No plugin class found in {module_path}")
 
-        plugin = plugin_class(bot=self.bot, db=self.db)
+        # اول خود Plugin را می‌سازیم تا name/version را داشته باشیم.
+        plugin = plugin_class(
+            bot=self.bot,
+            db=self.db,
+        )
+
+        # ثبت پلاگین در جدول plugins
+        await self._register_plugin(plugin)
+
+        # بعد از ثبت، plugin_id در دسترس خود Plugin است.
         plugin.setup()
 
         self.plugins[plugin.name] = plugin
 
         self._load_commands(plugin_name, plugin)
 
-        print(f"Loaded plugin: {plugin.name} v{plugin.version}")
+        print(
+            f"Loaded plugin: "
+            f"{plugin.name} v{plugin.version} "
+            f"(id={plugin.plugin_id})"
+        )
 
-    def _load_commands(self, plugin_name: str, plugin: BasePlugin) -> None:
+    async def _register_plugin(self, plugin: BasePlugin) -> None:
         """
-        اگه پلاگین یه commands.py با تابع register(command_manager, plugin)
-        داشته باشه، اجراش می‌کنیم. اختیاریه — plugin.py هیچ خبری ازش نداره.
+        Plugin را در جدول plugins ثبت یا بروزرسانی می‌کند
+        و شناسه‌ی آن را داخل plugin.plugin_id قرار می‌دهد.
+        """
+
+        await self.db.execute(
+            """
+            INSERT INTO plugins (
+                name,
+                version,
+                description,
+                enabled
+            )
+            VALUES (?, ?, ?, 1)
+            ON CONFLICT(name) DO UPDATE SET
+                version = excluded.version,
+                description = excluded.description
+            """,
+            (
+                plugin.name,
+                plugin.version,
+                plugin.description,
+            ),
+        )
+
+        row = await self.db.fetchone(
+            """
+            SELECT id
+            FROM plugins
+            WHERE name = ?
+            """,
+            (plugin.name,),
+        )
+
+        if row is None:
+            raise RuntimeError(
+                f"Failed to register plugin: {plugin.name}"
+            )
+
+        plugin.plugin_id = row["id"]
+
+    def _load_commands(
+        self,
+        plugin_name: str,
+        plugin: BasePlugin,
+    ) -> None:
+        """
+        اگه پلاگین commands.py داشته باشه،
+        تابع register آن را اجرا می‌کنیم.
         """
 
         module_path = f"plugins.{plugin_name}.commands"
@@ -96,7 +169,9 @@ class PluginManager:
         register(self.command_manager, plugin)
 
     def include_command_router(self) -> None:
-        self.dispatcher.include_router(self.command_manager.router)
+        self.dispatcher.include_router(
+            self.command_manager.router
+        )
 
     async def enable_all(self) -> None:
         for plugin in self.plugins.values():
