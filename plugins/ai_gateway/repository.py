@@ -3,7 +3,7 @@ from core.database_manager import DatabaseManager
 TABLE_NAME = "ai_gateway_models"
 
 
-async def ensure_table(db: DatabaseManager) -> None:
+async def ensure_table(db: DatabaseManager,plugin_id:int) -> None:
     await db.execute(
         f"""
         CREATE TABLE IF NOT EXISTS {TABLE_NAME} (

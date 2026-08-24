@@ -8,7 +8,7 @@ from .triggers import process_message
 class AIGateway(BasePlugin):
 
     name = "ai_gateway"
-    version = "2.1.1"
+    version = "2.1.2"
 
     async def setup(self) -> None:
         await repository.ensure_table(

@@ -8,9 +8,9 @@ from aiogram.dispatcher.event.bases import SkipHandler
 class ContentFilterPlugin(BasePlugin):
 
     name = "content_filter"
-    version = "0.1"
+    version = "0.1.1"
 
-    def setup(self) -> None:
+    async def setup(self) -> None:
         pass
 
     async def on_message(self, message) -> None:
