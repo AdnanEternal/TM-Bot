@@ -10,8 +10,8 @@ class AIGateway(BasePlugin):
     name = "ai_gateway"
     version = "2.1.0"
 
-    def setup(self) -> None:
-        pass
+    async def setup(self) -> None:
+        await repository.ensure_table(self.db,self.plugin_id)
 
     async def enable(self) -> None:
         await repository.ensure_table(self.db)

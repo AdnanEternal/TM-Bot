@@ -28,7 +28,7 @@ async def main() -> None:
     )
 
     await plugin_manager.initialize()
-    plugin_manager.discover()
+    await plugin_manager.discover()
 
     await plugin_manager.enable_all()
     await plugin_manager.command_manager.sync_commands(bot)
