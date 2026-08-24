@@ -16,8 +16,7 @@ class AIGateway(BasePlugin):
             self.plugin_id
             )
 
-    async def enable(self) -> None:
-        pass
+
 
     async def on_message(self, message: Message) -> None:
         await process_message(message, self.bot, self.db)
