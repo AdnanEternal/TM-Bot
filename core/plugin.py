@@ -24,7 +24,7 @@ class BasePlugin(ABC):
         self.enabled = False
 
     @abstractmethod
-    def setup(self) -> None:
+    async def setup(self) -> None:
         raise NotImplementedError
 
     async def enable(self) -> None:

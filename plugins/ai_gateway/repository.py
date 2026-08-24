@@ -8,12 +8,24 @@ async def ensure_table(db: DatabaseManager) -> None:
         f"""
         CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            label TEXT NOT NULL UNIQUE,
+
+            plugin_id INTEGER NOT NULL,
+
+
+            label TEXT NOT NULL,
             model_id TEXT NOT NULL,
             base_url TEXT NOT NULL,
             api_key TEXT NOT NULL,
+
             is_active INTEGER NOT NULL DEFAULT 0,
-            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (plugin_id)
+                REFERENCES plugins(id)
+                ON DELETE CASCADE,
+            
+            UNIQUE(plugin_id, label)
         )
         """
     )
@@ -22,19 +34,32 @@ async def ensure_table(db: DatabaseManager) -> None:
 async def add_model(
     db: DatabaseManager,
     *,
+    plugin_id: int,
     label: str,
     base_url: str,
     api_key: str,
     model_id: str,
 ) -> None:
-    # اول insert، بعد فعال‌سازی — اگه label تکراری بود (UNIQUE) اینسرت
-    # اکسپشن می‌ده و وضعیت مدل‌های قبلی دست‌نخورده می‌مونه.
+    
     await db.execute(
         f"""
-        INSERT INTO {TABLE_NAME} (label, model_id, base_url, api_key)
+        INSERT INTO {TABLE_NAME} 
+        (
+            plugin_id,
+            label, 
+            model_id, 
+            base_url, 
+            api_key
+        )
         VALUES (?, ?, ?, ?)
         """,
-        (label, model_id, base_url, api_key),
+        (
+            plugin_id,
+            label, 
+            model_id, 
+            base_url, 
+            api_key
+        ),
     )
 
 async def set_active_model(

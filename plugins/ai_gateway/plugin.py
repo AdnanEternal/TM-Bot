@@ -8,14 +8,16 @@ from .triggers import process_message
 class AIGateway(BasePlugin):
 
     name = "ai_gateway"
-    version = "2.1.0"
+    version = "2.1.1"
 
     async def setup(self) -> None:
-        await repository.ensure_table(self.db,self.plugin_id)
+        await repository.ensure_table(
+            self.db,
+            self.plugin_id
+            )
 
     async def enable(self) -> None:
-        await repository.ensure_table(self.db)
-        await super().enable()
+        pass
 
     async def on_message(self, message: Message) -> None:
         await process_message(message, self.bot, self.db)

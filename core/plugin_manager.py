@@ -90,7 +90,7 @@ class PluginManager:
         await self._register_plugin(plugin)
 
         # بعد از ثبت، plugin_id در دسترس خود Plugin است.
-        plugin.setup()
+        await plugin.setup()
 
         self.plugins[plugin.name] = plugin
 
