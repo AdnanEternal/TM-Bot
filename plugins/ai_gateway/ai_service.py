@@ -1,4 +1,4 @@
-from litellm import completion
+from litellm import acompletion
 
 
 class AIService:
@@ -7,7 +7,7 @@ class AIService:
         self.model_config = model_config
 
     async def ask(self, text: str) -> str:
-        response = completion(
+        response = await acompletion(
             model=self.model_config["model_id"],
             api_key=self.model_config["api_key"],
             base_url=self.model_config["base_url"],

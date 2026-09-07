@@ -35,7 +35,7 @@ async def _cmd_list_models(message: Message, plugin) -> None:
     if not models:
         await message.reply(
             "هیچ مدلی ثبت نشده.\n"
-            "/addmodel <label> <base_url> <api_key> <model_id>"
+            "/add_model <label> <base_url> <api_key> <model_id>"
         )
         return
 
@@ -56,7 +56,7 @@ async def _cmd_add_model(message: Message, plugin) -> None:
     if len(parts) < 5:
         await message.reply(
             "فرمت درست:\n"
-            "/addmodel <label> <base_url> <api_key> <model_id>"
+            "/add_model <label> <base_url> <api_key> <model_id>"
         )
         return
 

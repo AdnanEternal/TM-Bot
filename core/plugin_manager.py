@@ -130,7 +130,7 @@ class PluginManager:
 
         row = await self.db.fetchone(
             """
-            SELECT id
+            SELECT id, enabled
             FROM plugins
             WHERE name = ?
             """,
@@ -143,6 +143,7 @@ class PluginManager:
             )
 
         plugin.plugin_id = row["id"]
+        plugin.enabled = bool(row['enabled'])
 
     def _load_commands(
         self,
@@ -175,7 +176,10 @@ class PluginManager:
 
     async def enable_all(self) -> None:
         for plugin in self.plugins.values():
-            await plugin.enable()
+            if plugin.enabled:
+                await plugin.enable()
+            else:
+                await plugin.disable()
 
     async def disable_all(self) -> None:
         for plugin in self.plugins.values():
