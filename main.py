@@ -31,7 +31,11 @@ async def main() -> None:
     await plugin_manager.discover()
 
     await plugin_manager.enable_all()
+
+    print("Syncing Telegram commands...")
     await plugin_manager.command_manager.sync_commands(bot)
+    print("Telegram commands synced.")
+    
     plugin_manager.include_command_router()
 
     event_manager = EventManager(
